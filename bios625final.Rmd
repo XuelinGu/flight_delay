@@ -368,7 +368,7 @@ From our results, most varirables had low correlation with each other. Some fact
 
 ### Linear regression
 
-Linear Regresion was performed with the biganalytics package, where we analyzed delays for departures and arrivals in their own models. The code for arrival delays is included below.  
+Since the requirement of computitional memory for lm(), Linear Regresion was performed with the biganalytics package, where we analyzed delays for departures and arrivals in their own models. The code for arrival delays is included below.  
 
 ```{r, eval = FALSE}
 #certain variables were chosen to be categorical via as.factor()
@@ -464,8 +464,13 @@ for (i in 1:n){
 R_PRESS = 1 - sum_rresidual/SSY
 R_PRESS
 ```
+> R_PRESS #for ArrDelay
+[1] 0.04340849
+> R_PRESS #for DepDelay
+[1] 0.03541707
 
-From our diagnosis, we are interested in VIF values greater than 10 (the typical cutoff). After scaling the values to account for degrees of freedom in categories, we found that none of the covariates had an overwhelmingly large variance inflation factor. Thus, for our linear model we are not concerned with issues of multicolinearity. Our PRESS statistic, 
+
+From our diagnosis, we are interested in VIF values greater than 10 (the typical cutoff). After scaling the values to account for degrees of freedom in categories, we found that none of the covariates had an overwhelmingly large variance inflation factor. Thus, for our linear model we are not concerned with issues of multicolinearity. Our PRESS statistic showed the predictive ability of these two linear models are not very satisfying so other models should be considered, e.g. Linear Mixed Model.
 
 ### Linear Mixed Models
 
@@ -478,11 +483,28 @@ We ran the analysis on the biostatistics computing cluster for both arrival and 
 #Departure Delay is calculated similarly
 library(car)
 flight_model2 <- lmer(ArrDelay ~ Year + Fog.x + Rain.x + Snow.x + Hail.x + Thunder.x + TEMP.x + (1 | Year), dat)
-vif(flight_model2)
 #LMM model runtime: 671.962 sec elapsed
 ```
 
 Our models took approximately 10 minutes to run on the biostatistics cluster.  
+
+```{r, eval = FALSE}
+##VIF
+vif(flight_model2)
+##cross validation
+PRESS = function(fit){
+  res = residuals(fit)
+  H = hatvalues(fit)
+  sigma = summary(fit)$sigm
+  sres = sapply(1:length(res), function(i) res[[i]]/(sigma*sqrt(1-H[[i]])))
+  PRESS = sum(sres^2)
+  return(PRESS)
+}
+SSY = (fitted(flight_model2) - mean(dat$ArrDelay))^2
+R_PRESS = 1 - PRESS(flight_model2)/SSY
+```
+
+Also, we did VIF diagnosis and cross validation for models. Similarly, we are not concerned with issues of multicolinearity. As for cross validation results, we  
 
 ## Results  
 
