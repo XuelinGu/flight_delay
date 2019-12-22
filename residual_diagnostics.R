@@ -79,7 +79,6 @@ for (i in 1:n){
   ##Y-Y_hat
   c = dat1[flds[[i]], ]$ArrDelay - c
   SSY = SSY + sum((dat1[flds[[i]], ]$ArrDelay - Ybar)^2 )
-  n1 = n1 + length(c)
   sum_rresidual = sum_rresidual + sum(c^2)
 }
 ##calculate R_PRESS

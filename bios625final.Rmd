@@ -457,7 +457,6 @@ for (i in 1:n){
   ##Y-Y_hat
   c = dat1[flds[[i]], ]$ArrDelay - c
   SSY = SSY + sum((dat1[flds[[i]], ]$ArrDelay - Ybar)^2 )
-  n1 = n1 + length(c)
   sum_rresidual = sum_rresidual + sum(c^2)
 }
 ##calculate R_PRESS
@@ -470,7 +469,7 @@ R_PRESS
 [1] 0.03541707
 
 
-From our diagnosis, we are interested in VIF values greater than 10 (the typical cutoff). After scaling the values to account for degrees of freedom in categories, we found that none of the covariates had an overwhelmingly large variance inflation factor. Thus, for our linear model we are not concerned with issues of multicolinearity. Our PRESS statistic showed the predictive ability of these two linear models are not very satisfying so other models should be considered, e.g. Linear Mixed Model.
+From our diagnosis, we are interested in VIF values greater than 10 (the typical cutoff). After scaling the values to account for degrees of freedom in categories, we found that none of the covariates had an overwhelmingly large variance inflation factor. Thus, for our linear model we are not concerned with issues of multicolinearity. As for validation result, since it takes a long time to do leave-one-out cross validation, we tried 10-fold validation here. Our PRESS statistic showed the predictive ability of these two linear models are not very satisfying so other models should be considered, e.g. Linear Mixed Model. 
 
 ### Linear Mixed Models
 
@@ -503,8 +502,13 @@ PRESS = function(fit){
 SSY = (fitted(flight_model2) - mean(dat$ArrDelay))^2
 R_PRESS = 1 - PRESS(flight_model2)/SSY
 ```
+> R_PRESS ##for ArrDelay
+[1] 0.9691399
 
-Also, we did VIF diagnosis and cross validation for models. Similarly, we are not concerned with issues of multicolinearity. As for cross validation results, we  
+> R_PRESS ##for DepDelay
+[1] 0.9207938
+
+Also, we did VIF diagnosis and cross validation for models. Similarly, we are not concerned with issues of multicolinearity. As for cross validation results, the prediction ability of linear mixed model is much better than linear regression models.  
 
 ## Results  
 
